@@ -1,6 +1,7 @@
 pub mod auth;
 pub mod bot;
 pub mod commands;
+pub mod modal;
 pub mod response;
 
 pub struct Data {}

@@ -29,3 +29,6 @@ Desktop.ini
 # Rust profiling output
 *.profraw
 *.profdata
+/target
+/data/scripts/
+/data/logs/
