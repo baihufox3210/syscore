@@ -4,7 +4,13 @@ pub mod commands;
 pub mod modal;
 pub mod response;
 
-pub struct Data {}
+use tokio::sync::Mutex;
+
+use crate::infrastructure::registry::Registry;
+
+pub struct Data {
+    pub registry: Mutex<Registry>,
+}
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;

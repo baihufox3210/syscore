@@ -1,7 +1,11 @@
+use std::path::Path;
+
 use poise::serenity_prelude as serenity;
+use tokio::sync::Mutex;
 use tracing::info;
 
 use super::{Data, Error, commands};
+use crate::infrastructure::{registry::Registry, storage};
 
 type Framework = poise::Framework<Data, Error>;
 
@@ -38,5 +42,10 @@ async fn on_ready(
     poise::builtins::register_globally(ctx, &framework.options().commands).await?;
     info!("Slash commands 註冊完成");
 
-    Ok(Data {})
+    let registry = Registry::load(Path::new(storage::REGISTRY_PATH))?;
+    info!("已載入 {} 個 task", registry.tasks.len());
+
+    Ok(Data {
+        registry: Mutex::new(registry),
+    })
 }
