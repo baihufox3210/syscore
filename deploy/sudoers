@@ -1,0 +1,15 @@
+# 讓 syscore 腳本可以不輸入密碼執行特定的 systemctl 指令。
+# 依照你要管理的服務修改 SYSCORE_UNITS，只開放真的需要的指令。
+#
+# 安裝（visudo -c 會先檢查語法，寫錯會把 sudo 鎖死）：
+#   sudo install -m 0440 -o root -g root deploy/sudoers /etc/sudoers.d/syscore
+#   sudo visudo -c
+
+Cmnd_Alias SYSCORE_UNITS = \
+    /usr/bin/systemctl start baihu-blog-api, \
+    /usr/bin/systemctl stop baihu-blog-api, \
+    /usr/bin/systemctl restart baihu-blog-api, \
+    /usr/bin/systemctl enable baihu-blog-api, \
+    /usr/bin/systemctl disable baihu-blog-api
+
+baihu ALL=(root) NOPASSWD: SYSCORE_UNITS

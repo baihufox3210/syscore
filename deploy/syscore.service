@@ -1,7 +1,26 @@
-[security]
-owner_only = true
+# 安裝：
+#   sudo cp deploy/syscore.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now syscore
 
-[features]
-systemd = true
-docker = true
-npm = true
+[Unit]
+Description=SysCore Discord bot
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=baihu
+Group=baihu
+# .env 和 data/ 都相對於這個目錄
+WorkingDirectory=/opt/syscore
+ExecStart=/opt/syscore/syscore
+Environment=RUST_LOG=info
+# systemd 的 PATH 很精簡，腳本會用到的 npm、pm2 等工具所在目錄要加進來
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=5
+# 注意：不能設定 NoNewPrivileges=true，否則腳本裡的 sudo 會失效
+
+[Install]
+WantedBy=multi-user.target
