@@ -2,7 +2,7 @@ use std::path::Path;
 
 use poise::serenity_prelude as serenity;
 use tokio::sync::Mutex;
-use tracing::info;
+use tracing::{info, warn};
 
 use super::{Data, Error, commands};
 use crate::infrastructure::{registry::Registry, storage};
@@ -28,7 +28,30 @@ pub async fn run(token: String) -> Result<(), Error> {
 fn framework_options() -> poise::FrameworkOptions<Data, Error> {
     poise::FrameworkOptions {
         commands: commands::all(),
+        on_error: |error| Box::pin(on_error(error)),
         ..Default::default()
+    }
+}
+
+/// 指令錯誤只回覆給執行的人，避免在公開頻道洗版
+async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
+    match error {
+        poise::FrameworkError::Command { error, ctx, .. } => {
+            warn!("/{} 執行失敗：{error}", ctx.command().name);
+
+            let reply = poise::CreateReply::default()
+                .content(format!("❌ {error}"))
+                .ephemeral(true);
+
+            if let Err(e) = ctx.send(reply).await {
+                warn!("無法回覆錯誤訊息：{e}");
+            }
+        }
+        other => {
+            if let Err(e) = poise::builtins::on_error(other).await {
+                warn!("處理錯誤時失敗：{e}");
+            }
+        }
     }
 }
 

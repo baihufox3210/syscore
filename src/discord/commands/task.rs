@@ -61,7 +61,7 @@ pub async fn task_add(
     Ok(())
 }
 
-#[poise::command(slash_command, ephemeral)]
+#[poise::command(slash_command)]
 pub async fn task_list(ctx: Context<'_>) -> Result<(), Error> {
     auth::authorize(ctx).await?;
 
@@ -149,7 +149,7 @@ pub async fn task_remove(
     Ok(())
 }
 
-#[poise::command(slash_command, ephemeral)]
+#[poise::command(slash_command)]
 pub async fn task_run(
     ctx: Context<'_>,
     #[autocomplete = "autocomplete_task"] name: String,
@@ -170,7 +170,7 @@ pub async fn task_run(
         .map(str::to_string)
         .collect();
 
-    ctx.defer_ephemeral().await?;
+    ctx.defer().await?;
 
     let output = task_manager::run(&task, &action, &args).await?;
 
