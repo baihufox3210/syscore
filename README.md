@@ -44,7 +44,13 @@ Rules:
 - Arguments from Discord arrive as `$1`, `$2`, and so on. They are passed as plain values and are never run as shell code.
 - stdin is closed, so `sudo` must be passwordless. See [`deploy/sudoers`](deploy/sudoers).
 
-See [`examples/scripts/`](examples/scripts) for systemd, Docker Compose, and npm/PM2 templates.
+See [`docs/SCRIPTS.md`](docs/SCRIPTS.md) for the full rules, standard actions and patterns, and [`examples/scripts/`](examples/scripts) for a blank template and systemd, Docker Compose, and npm/PM2 examples.
+
+Check a script before uploading it:
+
+```sh
+syscore check my-service.sh   # or: cargo run -- check my-service.sh
+```
 
 ## Commands
 
@@ -78,7 +84,6 @@ sudo mkdir -p /opt/syscore && sudo chown "$USER": /opt/syscore
 install -m 755 target/release/syscore /opt/syscore/
 install -m 600 .env.example /opt/syscore/.env   # then set DISCORD_TOKEN
 
-# Permissions needed by your scripts
 sudo usermod -aG docker,systemd-journal "$USER"
 sudo install -m 0440 deploy/sudoers /etc/sudoers.d/syscore && sudo visudo -c
 
